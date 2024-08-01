@@ -96,4 +96,150 @@
             }, callbacks: { markupParse: function (template, values, item) { values.title = item.el.attr('title'); } },
         }); $('.ajax-page-load-link').magnificPopup({ type: 'ajax', removalDelay: 300, mainClass: 'mfp-fade', gallery: { enabled: true }, }); $('.tilt-effect').tilt({});
     });
+   
+    const startDate = new Date('2023-01-24');
+const endDate = new Date(); 
+const dailyWorkingHours = 9;
+const startHour = 10;
+const endHour = 19;
+
+function calculateTotalWorkingSeconds() {
+  let totalSeconds = 0;
+  for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+    const day = date.getDay();
+    if (day !== 0 && day !== 6) { // Only count weekdays
+      totalSeconds += dailyWorkingHours * 3600;
+    }
+  }
+  return totalSeconds;
+}
+
+let totalWorkingSeconds = sessionStorage.getItem('totalWorkingSeconds');
+if (totalWorkingSeconds === null) {
+  totalWorkingSeconds = calculateTotalWorkingSeconds();
+  sessionStorage.setItem('totalWorkingSeconds', totalWorkingSeconds);
+} else {
+  totalWorkingSeconds = parseInt(totalWorkingSeconds, 10);
+}
+
+const counterElement = document.getElementById('working_hours');
+
+function formatTime(seconds) {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateCounter() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const day = now.getDay();
+
+  if (currentHour >= startHour && currentHour < endHour && day !== 0 && day !== 6) {
+    // Within working hours on a weekday
+    totalWorkingSeconds++;
+    sessionStorage.setItem('totalWorkingSeconds', totalWorkingSeconds);
+  }
+
+  counterElement.textContent = formatTime(totalWorkingSeconds);
+}
+
+updateCounter(); // Initial call to set the counter immediately
+setInterval(updateCounter, 1000); // Update every second
+
+    
+
+
+  // Replace 'YOUR_GITHUB_USERNAME' with your GitHub username
+    // Replace 'YOUR_PERSONAL_ACCESS_TOKEN' with your GitHub Personal Access Token
+    const username = 'Sharon2408';
+    const token = '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';
+
+    // GitHub API endpoint to get the user's repositories
+    const url = `https://api.github.com/users/${username}/repos`;
+
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json'
+    };
+
+    async function getCommitCount(repo) {
+      const repoName = repo.name;
+      const commitsUrl = `https://api.github.com/repos/${username}/${repoName}/commits`;
+      let commitCount = 0;
+      let page = 1;
+      while (true) {
+        const response = await fetch(`${commitsUrl}?per_page=100&page=${page}`, { headers });
+        if (response.ok) {
+          const commits = await response.json();
+          if (commits.length === 0) break;
+          commitCount += commits.length;
+          page += 1;
+        } else {
+          console.error(`Failed to fetch commits for repo ${repoName}: ${response.status}`);
+          break;
+        }
+      }
+      return commitCount;
+    }
+
+    // async function getPullRequestCount(repo) {
+    //     const repoName = repo.name;
+    //     const pullsUrl = `https://api.github.com/repos/${username}/${repoName}/pulls?state=all`;
+    //     let pullCount = 0;
+    //     let page = 1;
+    //     while (true) {
+    //       const response = await fetch(`${pullsUrl}&per_page=100&page=${page}`, { headers });
+    //       if (response.ok) {
+    //         const pulls = await response.json();
+    //         if (pulls.length === 0) break;
+    //         pullCount += pulls.length;
+    //         page += 1;
+    //       } else {
+    //         console.error(`Failed to fetch pull requests for repo ${repoName}: ${response.status}`);
+    //         break;
+    //       }
+    //     }
+    //     return pullCount;
+    //   }
+      
+
+      async function main() {
+        const response = await fetch(url, { headers });
+        if (response.ok) {
+          const repos = await response.json();
+          let totalCommits = 0;
+          let totalPullRequests = 0;
+      
+          for (const repo of repos) {
+           // if (repo.name !== 'freeCodeCampsharon') {
+              // Fetch commit count
+              const commitCount = await getCommitCount(repo);
+             // console.log(`Repo: ${repo.name}, Commits: ${commitCount}`);
+              totalCommits += commitCount;
+      
+              // Fetch pull request count
+            //   const pullRequestCount = await getPullRequestCount(repo);
+            //   console.log(`Repo: ${repo.name}, Pull Requests: ${pullRequestCount}`);
+            //   totalPullRequests += pullRequestCount;
+           // }
+          }
+      
+          // Update the DOM elements with the total counts
+          const gitCommitCountElement = document.getElementById("git_commits");
+          gitCommitCountElement.textContent = totalCommits;
+      
+          const prCounterElement = document.getElementById("git-pull");
+          prCounterElement.textContent = totalPullRequests;
+      
+         // console.log(`Total commit count: ${totalCommits}`);
+         // console.log(`Total pull request count: ${totalPullRequests}`);
+        } else {
+          console.error(`Failed to fetch repositories: ${response.status}`);
+        }
+      }
+      
+
+    main().catch(error => console.error('Error:', error));
 })(jQuery);
