@@ -154,6 +154,7 @@ setInterval(updateCounter, 1000); // Update every second
   // Replace 'YOUR_GITHUB_USERNAME' with your GitHub username
     // Replace 'YOUR_PERSONAL_ACCESS_TOKEN' with your GitHub Personal Access Token
     const username = 'Sharon2408';
+    const token = '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';
 
     // GitHub API endpoint to get the user's repositories
     const url = `https://api.github.com/users/${username}/repos`;
