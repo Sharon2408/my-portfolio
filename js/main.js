@@ -154,7 +154,6 @@ setInterval(updateCounter, 1000); // Update every second
   // Replace 'YOUR_GITHUB_USERNAME' with your GitHub username
     // Replace 'YOUR_PERSONAL_ACCESS_TOKEN' with your GitHub Personal Access Token
     const username = 'Sharon2408';
-    const token = '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';
 
     // GitHub API endpoint to get the user's repositories
     const url = `https://api.github.com/users/${username}/repos`;
@@ -184,25 +183,7 @@ setInterval(updateCounter, 1000); // Update every second
       return commitCount;
     }
 
-    // async function getPullRequestCount(repo) {
-    //     const repoName = repo.name;
-    //     const pullsUrl = `https://api.github.com/repos/${username}/${repoName}/pulls?state=all`;
-    //     let pullCount = 0;
-    //     let page = 1;
-    //     while (true) {
-    //       const response = await fetch(`${pullsUrl}&per_page=100&page=${page}`, { headers });
-    //       if (response.ok) {
-    //         const pulls = await response.json();
-    //         if (pulls.length === 0) break;
-    //         pullCount += pulls.length;
-    //         page += 1;
-    //       } else {
-    //         console.error(`Failed to fetch pull requests for repo ${repoName}: ${response.status}`);
-    //         break;
-    //       }
-    //     }
-    //     return pullCount;
-    //   }
+    
       
 
       async function main() {
